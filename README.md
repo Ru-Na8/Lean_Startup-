@@ -36,7 +36,7 @@ The mission:
 - Exit strategies: acquisition, franchise, or merger  
 📄 [View the presentation](./A2%20VRG_Arena%20Presentation.pdf)
 
-[🎥 Watch the VRG Arena Concept Video](./A2/VRG_Arena/images/Discover%20VRG%20Arena%20Kalmar_free.mp4)
+![🎥 Watch the VRG Arena Concept Video](./A2/VRG_Arena/images/Discover%20VRG%20Arena%20Kalmar_free.mp4)
 
 
 ---
