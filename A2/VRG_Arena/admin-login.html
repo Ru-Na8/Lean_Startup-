@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login – VRG Arena</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #0e0e1a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-box {
+            background: #1e1e2f;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            width: 300px;
+        }
+
+        h2 {
+            color: #ffcc00;
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            background: #ba27f4;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .error {
+            color: #ff4b2b;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+        <h2>Admin Login</h2>
+        <form onsubmit="return loginAdmin()" autocomplete="off">
+            <input type="text" id="namn" placeholder="Namn" required>
+            <input type="email" id="email" placeholder="E-post" required>
+            <button type="submit">Logga in</button>
+            <div class="error" id="error-msg"></div>
+        </form>
+    </div>
+
+    <script>
+        function loginAdmin() {
+            const namn = document.getElementById("namn").value.trim().toLowerCase();
+            const email = document.getElementById("email").value.trim().toLowerCase();
+
+            const admins = [
+                { namn: "admin 22", email: "admin@vrgarena.se" },
+                { namn: "rula nayf", email: "rn222qf@student.lnu.se" },
+                { namn: "hui ma", email: "hm223ab@student.lnu.se" },
+                { namn: "marios gkikopouli", email: "mg223uk@student.lnu.se" }
+            ];
+
+            const isAdmin = admins.some(admin =>
+                admin.namn === namn && admin.email === email
+            );
+
+            if (isAdmin) {
+                sessionStorage.setItem("admin", "true");
+                window.location.href = "Admin_panel.html";
+            } else {
+                document.getElementById("error-msg").textContent = "Fel uppgifter. Endast administratör tillåten.";
+            }
+
+            return false;
+        }
+    </script>
+</body>
+
+</html>

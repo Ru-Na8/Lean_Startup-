@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VRG Arena – Boka</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #0e0e1a, #1a1a2e);
+            color: white;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffcc00;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .form-box {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input,
+        select {
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background-color: #1c1c2b;
+            color: white;
+        }
+
+        input::placeholder {
+            color: #bbb;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ba27f4, #9330f4);
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #a022d4, #7c28cc);
+        }
+
+        #confirmationBox {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        #confirmationBox h2 {
+            color: #4caf50;
+        }
+
+        .logo-box {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-box img {
+            max-width: 100%;
+            max-height: 500px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #confirmationBox,
+            #confirmationBox * {
+                visibility: visible;
+            }
+
+            #confirmationBox {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1> Boka din VR-upplevelse hos VRG Arena</h1>
+
+    <div class="container">
+        <!-- Booking Form -->
+        <div class="form-box">
+            <form id="bookingForm">
+                <input type="text" id="name" placeholder="Namn" required />
+                <input type="email" id="email" placeholder="E-post" required />
+                <label for="datum">Välj datum:</label>
+                <input type="date" id="datum" required />
+                <label for="hour">Välj timme:</label>
+                <select id="hour" required>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                </select>
+                <label for="time">Välj sessionstid:</label>
+                <select id="time">
+                    <option value="30 min">30 minuter</option>
+                    <option value="60 min">60 minuter</option>
+                    <option value="90 min">90 minuter</option>
+                </select>
+                <label for="game">Välj spel:</label>
+                <select id="game">
+                    <option>Arizona Sunshine</option>
+                    <option>Creed: Rise to Glory</option>
+                    <option>Tower Tag</option>
+                    <option>Dragon Slayers</option>
+                    <option>Last Defenders</option>
+                    <option>Alien Arena</option>
+                    <option>Robin Hood</option>
+                    <option>Ninja Legends</option>
+                    <option>The Brookhaven Experiment</option>
+                    <option>Afterwork</option>
+                    <option>Barnkalas</option>
+                </select>
+                <button type="submit">Boka</button>
+            </form>
+
+            <h2 style="margin-top: 30px;">Betalning</h2>
+            <button onclick="confirmPayment()">Betala nu</button>
+
+            <div id="confirmationBox">
+                <h2>Bokningsbekräftelse</h2>
+                <p id="confirmDetails"></p>
+                <button onclick="window.print()">Skriv ut som PDF</button>
+            </div>
+        </div>
+
+        <!-- Logo -->
+        <div class="logo-box">
+            <img src="images/l.png" alt="VRG Arena Logo" />
+        </div>
+    </div>
+
+    <script>
+        function generateBookingId() {
+            return 'VRG-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        document.getElementById("bookingForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const name = document.getElementById("name").value;
+            const time = document.getElementById("time").value;
+            const date = document.getElementById("datum").value;
+            const hour = document.getElementById("hour").value;
+            const game = document.getElementById("game").value;
+
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            const existingBooking = bookings.find(b => b.datum === date && b.tid === hour);
+            if (existingBooking) {
+                alert(`Tiden ${hour} på ${date} är redan bokad. Välj en annan tid.`);
+                return;
+            }
+
+            const bookingId = generateBookingId();
+            const booking = {
+                namn: name,
+                session: time,
+                datum: date,
+                tid: hour,
+                status: "Bokad",
+                email: email,
+                spel: game,
+                id: bookingId
+            };
+
+            bookings.push(booking);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+
+            const details = `
+        <strong>Boknings-ID:</strong> ${bookingId}<br>
+        Namn: ${name}<br>
+        E-post: ${email}<br>
+        Datum: ${date}<br>
+        Tid: ${hour}<br>
+        Session: ${time}<br>
+        Spel: ${game}`;
+            document.getElementById("confirmDetails").innerHTML = details;
+            document.getElementById("confirmationBox").style.display = "block";
+
+            console.log(`Skickar e-post till ${email}: Din bokning är bekräftad.`);
+            document.getElementById("bookingForm").reset();
+        });
+
+        function confirmPayment() {
+            alert("Betalning genomförd! Tack för din bokning.");
+        }
+    </script>
+</body>
+
+</html>

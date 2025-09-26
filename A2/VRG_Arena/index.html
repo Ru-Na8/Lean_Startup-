@@ -1,0 +1,162 @@
+<!-- Startsida -->
+ <!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VRG Arena - VR Upplevelser i Kalmar</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: #0e0e1a;
+      color: #e0e0e0;
+    }
+    nav {
+      background: #ba27f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav .logo {
+      font-weight: bold;
+      font-size: 1.6rem;
+      color: white;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+    header {
+      height: 100vh;
+      background: url('images/VRGLogo.png') center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    header h1, header p {
+      color: white;
+      z-index: 1;
+    }
+    .cta-fixed {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff4b2b;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    section {
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .images img {
+      max-width: 450px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+    }
+    video {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+    }
+    footer {
+      background: #161625;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VRG Arena</div>
+  <div>
+    <a href="#about">Om oss</a>
+    <a href="#book">Boka</a>
+    <a href="#contact">Kontakt</a>
+    <a href="admin-login.html">Admin</a>
+  </div>
+</nav>
+
+<header>
+  <h1>VRG Arena Kalmar</h1>
+  <p>Där teknik möter gemenskap och minnen skapas.</p>
+</header>
+
+<section id="about">
+  <h2>Upplev VR på riktigt</h2>
+  <p>Välkommen till VRG Arena! Här kliver du in i spännande världar med vänner, familj eller kollegor.</p>
+  <p>Över 40 upplevelser – perfekt för kalas, företagsevent och sociala möten.</p>
+  <div class="images">
+    <img src="images/vrg-arena-visual-1.png" alt="Arena miljö 1">
+    <img src="images/vrg-arena-visual-2.png" alt="Arena miljö 2">
+  </div>
+</section>
+
+<section id="video">
+  <h2>Video från vår VR-upplevelse</h2>
+  <video controls>
+    <source src="images/Discover VRG Arena Kalmar_free.mp4" type="video/mp4">
+    Din webbläsare stödjer inte video.
+  </video>
+</section>
+
+<section id="book">
+  <h2>Boka din VR-session</h2>
+  <ul>
+    <li>30 min – 100 kr</li>
+    <li>60 min – 180 kr</li>
+    <li>90 min – 250 kr</li>
+  </ul>
+  <p>För grupper & event – kontakta oss!</p>
+</section>
+
+<section id="contact">
+  <h2>Kontakt & Adress</h2>
+  <p>E-post: <strong>vrgarena@gmail.com</strong></p>
+  <p>Telefon: <strong>076-832 32 21</strong></p>
+  <p>Adress: Verkstadsgatan 8, Kalmar</p>
+</section>
+
+<section id="social">
+  <h2>Följ oss</h2>
+  <p>Få exklusiva kampanjer & nyheter genom att följa oss!</p>
+  <div style="display: flex; gap: 20px; justify-content: center;">
+    <a href="#"><img src="https://img.icons8.com/color/48/instagram-new.png"/></a>
+    <a href="#"><img src="https://img.icons8.com/color/48/tiktok--v1.png"/></a>
+    <a href="#"><img src="https://img.icons8.com/color/48/snapchat-circled-logo.png"/></a>
+  </div>
+  <div class="images" style="margin-top: 30px;">
+    <img src="images/ADS.png" alt="Reklamaffisch">
+  </div>
+</section>
+
+<footer>
+  VRG Arena AB | Verkstadsgatan 8, Kalmar | © 2025
+</footer>
+
+<a href="user_panel.html" class="cta-fixed">Boka nu</a>
+
+</body>
+</html>

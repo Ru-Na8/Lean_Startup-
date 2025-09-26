@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Adminpanel – VRG Arena</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            background: #0e0e1a;
+            color: white;
+            font-family: 'Open Sans', sans-serif;
+            padding: 40px;
+        }
+
+        h1,
+        h2 {
+            color: #ffcc00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #444;
+            padding: 10px;
+            background-color: #1c1c2b;
+
+            text-align: left;
+        }
+
+        th {
+            background-color: #222;
+        }
+
+        .logout-btn,
+        .export-btn {
+            margin-top: 30px;
+            margin-right: 15px;
+            background: #ff4b2b;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .export-btn {
+            background: #27c4f4;
+        }
+
+        .pdf-btn {
+            background: #009688;
+        }
+
+        form {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            gap: 10px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            background-color: #1c1c2b;
+            font-size: 1rem;
+        }
+
+        button[type="submit"] {
+            background: #ba27f4;
+            color: rgb(252, 250, 250);
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Adminpanel – Bokningsöversikt</h1>
+    <p id="incomeDisplay">Total inkomst: 0 kr</p>
+
+    <label for="filterStatus">Filtrera efter status:</label>
+    <select id="filterStatus" onchange="filterBookings()">
+        <option value="">Alla</option>
+        <option value="Bokad">Bokad</option>
+        <option value="Bekräftad">Bekräftad</option>
+    </select>
+
+    <label for="filterDate">Filtrera efter datum:</label>
+    <input type="date" id="filterDate" onchange="filterBookings()">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Namn</th>
+                <th>Session</th>
+                <th>Datum</th>
+                <th>Status</th>
+                <th>Ta bort</th>
+            </tr>
+        </thead>
+        <tbody id="booking-table"></tbody>
+    </table>
+
+    <h2>Lägg till ny bokning</h2>
+    <form id="addBookingForm">
+        <input type="text" id="namn" placeholder="Namn" required>
+        <select id="session">
+            <option value="30 min">30 minuter</option>
+            <option value="60 min">60 minuter</option>
+            <option value="90 min">90 minuter</option>
+        </select>
+        <input type="date" id="datum" required>
+        <select id="status">
+            <option value="Bokad">Bokad</option>
+            <option value="Bekräftad">Bekräftad</option>
+        </select>
+        <button type="submit">Lägg till bokning</button>
+    </form>
+
+    <h2>Statistik – Bokningar per månad</h2>
+    <canvas id="chart" width="400" height="200"></canvas>
+
+    <div style="margin-top: 40px;">
+        <button class="export-btn" onclick="exportToCSV()">Exportera som CSV </button>
+        <button class="export-btn pdf-btn" onclick="exportToPDF()">Exportera som PDF </button>
+        <button class="logout-btn" onclick="logout()">Logga ut</button>
+    </div>
+
+    <script>
+        if (sessionStorage.getItem("admin") !== "true") {
+            alert("Åtkomst nekad. Du måste logga in som admin.");
+            window.location.href = "index.html";
+        }
+
+        const table = document.getElementById('booking-table');
+
+        function getSessionPrice(session) {
+            if (session === "30 min") return 100;
+            if (session === "60 min") return 180;
+            if (session === "90 min") return 250;
+            return 0;
+        }
+
+        function loadBookings() {
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            displayBookings(bookings);
+            drawChart(bookings);
+            updateIncome(bookings);
+        }
+
+        function displayBookings(bookings) {
+            table.innerHTML = "";
+            bookings.forEach((b, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+              <td>${b.namn}</td>
+              <td>${b.session}</td>
+              <td>${b.datum}</td>
+              <td>${b.status}</td>
+              <td><button class="delete-btn" onclick="confirmDelete(${index})">X</button></td>
+            `;
+                table.appendChild(row);
+            });
+        }
+
+        function confirmDelete(index) {
+            if (confirm("Är du säker på att du vill ta bort bokningen?")) {
+                deleteBooking(index);
+                alert("Bokningen har tagits bort.");
+            }
+        }
+
+        function deleteBooking(index) {
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.splice(index, 1);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            loadBookings();
+        }
+
+        document.getElementById('addBookingForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const namn = document.getElementById('namn').value;
+            const session = document.getElementById('session').value;
+            const datum = document.getElementById('datum').value;
+            const status = document.getElementById('status').value;
+
+            const booking = { namn, session, datum, status };
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.push(booking);
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+
+            loadBookings();
+            this.reset();
+        });
+
+        function logout() {
+            sessionStorage.removeItem("admin");
+            alert("Du är nu utloggad.");
+            window.location.href = "index.html";
+        }
+
+        function exportToCSV() {
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            if (bookings.length === 0) {
+                alert("Inga bokningar att exportera.");
+                return;
+            }
+
+            const csvRows = [["Namn", "Session", "Datum", "Status"]];
+            bookings.forEach(b => {
+                csvRows.push([b.namn, b.session, b.datum, b.status]);
+            });
+
+            const csvContent = csvRows.map(e => e.join(",")).join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "vrg_bokningar.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("VRG Arena - Bokningsöversikt", 10, 10);
+            const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.forEach((b, i) => {
+                doc.text(`${b.namn} - ${b.session} - ${b.datum} - ${b.status}`, 10, 20 + i * 10);
+            });
+            doc.save("vrg_bokningar.pdf");
+        }
+
+        function drawChart(bookings) {
+            const monthly = {};
+            bookings.forEach(b => {
+                const month = b.datum.slice(0, 7);
+                monthly[month] = (monthly[month] || 0) + 1;
+            });
+            const ctx = document.getElementById('chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(monthly),
+                    datasets: [{
+                        label: 'Bokningar per månad',
+                        data: Object.values(monthly),
+                        backgroundColor: '#ba27f4'
+                    }]
+                }
+            });
+        }
+
+        function updateIncome(bookings) {
+            const total = bookings.reduce((sum, b) => sum + getSessionPrice(b.session), 0);
+            document.getElementById("incomeDisplay").textContent = "Total inkomst: " + total + " kr";
+        }
+
+        function filterBookings() {
+            const status = document.getElementById("filterStatus").value;
+            const date = document.getElementById("filterDate").value;
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            if (status) bookings = bookings.filter(b => b.status === status);
+            if (date) bookings = bookings.filter(b => b.datum === date);
+            displayBookings(bookings);
+        }
+
+        loadBookings();
+    </script>
+
+</body>
+
+</html>
