@@ -50,7 +50,7 @@ Features:
 - Delete bookings (with confirmation)  
 - Logout functionality  
 
-![Admin Login](./images/Admin_Login.png)
+![Admin Login](./A2/VRG_Arena/images/Admin_Login.png)
 
 ---
 
@@ -61,7 +61,7 @@ Features:
 - Simulated payment  
 - Printable receipts  
 
-![User Panel](./images/User_Panel.png)
+![User Panel](./A2/VRG_Arena/images/User_Panel.png)
 
 ---
 
